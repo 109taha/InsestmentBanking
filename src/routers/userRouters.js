@@ -8,7 +8,7 @@ const upload = require("../helper/multer");
 const fs = require("fs");
 const { AdminJoiSchema, UserJoiSchema } = require("../helper/joi/joiSchema");
 const sendResetEmail = require("../helper/nodemailer");
-const { verifyUser } = require("../middleWares/verify");
+const { verifyUser } = require("../helper/middleware/verify");
 
 router.post("/registeradmin", AdminJoiSchema, async (req, res) => {
   try {
