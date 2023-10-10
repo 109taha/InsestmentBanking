@@ -5,6 +5,8 @@ require("dotenv").config();
 const dbConfig = require("./dbconfig/dbConfig");
 dbConfig();
 
+app.use(express.json());
+
 const PORT = process.env.PORT || "5000";
 app.listen(PORT, () => {
   try {

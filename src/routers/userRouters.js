@@ -13,6 +13,7 @@ const { verifyUser } = require("../helper/middleware/verify");
 router.post("/registeradmin", AdminJoiSchema, async (req, res) => {
   try {
     const { email, name, password, phoneNumber, devicetoken } = req.body;
+    console.log(req.body);
     if (!email || !name || !password || !phoneNumber) {
       return res.status(400).send("you have to provide all of the felid");
     }
