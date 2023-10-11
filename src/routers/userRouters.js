@@ -17,7 +17,11 @@ router.post("/registeradmin", AdminJoiSchema, async (req, res) => {
     if (!email || !name || !password || !phoneNumber) {
       return res.status(400).send("you have to provide all of the felid");
     }
-    const exisitUser = await Admin.findOne({ email });
+    const exisitUserAdmin = await Admin.findOne({ email });
+    if (exisitUserAdmin) {
+      return res.status(400).send("Admin already register, goto login page");
+    }
+    const exisitUser = await User.findOne({ email });
     if (exisitUser) {
       return res.status(400).send("User already register, goto login page");
     }
@@ -148,10 +152,16 @@ router.post("/register", UserJoiSchema, async (req, res) => {
     if (!email || !name || !password || !phoneNumber) {
       return res.status(400).send("you have to provide all of the field");
     }
+
+    const exisitUserAdmin = await Admin.findOne({ email });
+    if (exisitUserAdmin) {
+      return res.status(400).send("Admin already register, goto login page");
+    }
     const exisitUser = await User.findOne({ email });
     if (exisitUser) {
       return res.status(400).send("User already register, goto login page");
     }
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const newUser = new User({
