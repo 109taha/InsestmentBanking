@@ -5,7 +5,7 @@ const ContactUs = require("../model/ContactUs");
 
 router.post("/create", verifyAdmin, async (req, res) => {
   try {
-    const { detail, planDuration, price } = req.body;
+    const { detail, planDuration, price, contactUs } = req.body;
     if ((!detail, !price, !planDuration)) {
       return res
         .status(400)
@@ -15,6 +15,7 @@ router.post("/create", verifyAdmin, async (req, res) => {
       detail,
       planDuration,
       price,
+      contactUs,
     });
     await newInvestment.save();
     res.status(200).send({ success: true, data: newInvestment });
@@ -64,7 +65,7 @@ router.get("/all", async (req, res) => {
 router.get("/one/:Id", async (req, res) => {
   try {
     const invId = req.params.Id;
-    const allInv = await Investment.findById(invId);
+    const allInv = await Investment.findById(invId).populate("contactUs");
     if (allInv.lenght <= 0) {
       return res
         .status(400)
@@ -177,10 +178,11 @@ router.get("/get/contact/:Id", async (req, res) => {
     return res.status(500).send("Internal server error");
   }
 });
+
 router.delete("/get/contact/:Id", async (req, res) => {
   try {
     const con = req.params.Id;
-    const all = await ContactUs.findById(con);
+    const all = await ContactUs.findByIdAndDelete(con);
     res
       .status(200)
       .send({ success: true, message: "Contact Number deleted successfully" });
