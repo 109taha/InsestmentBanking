@@ -7,10 +7,10 @@ const User = require("../model/userSchema");
 const Admin = require("../model/adminSchema");
 const cloudinary = require("../helper/cloudinary");
 const sendResetEmail = require("../helper/nodemailer");
-const { verifyUser } = require("../helper/middleware/verify");
-const { AdminJoiSchema, UserJoiSchema } = require("../helper/joi/joiSchema");
 const JWT_SEC = "JoM2CF2k19Z0Jpwom6wkuFvKvNMQwuqiPHryaoJ";
+const { verifyUser } = require("../helper/middleware/verify");
 const JWT_SEC_ADMIN = "CsJ6R8Y6XIPG0ayeyjaHP2FdozBgVBE0813SgEtQC5";
+const { AdminJoiSchema, UserJoiSchema } = require("../helper/joi/joiSchema");
 
 router.post("/registeradmin", AdminJoiSchema, async (req, res) => {
   try {
@@ -231,6 +231,35 @@ router.put("/update/:id", async (req, res) => {
 
     await user.save();
     res.status(200).send({ message: "User updated successfully", user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error: " + error.message);
+  }
+});
+
+router.put("/updateadmin/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { email, name, password, phoneNumber, devicetoken } = req.body;
+
+    const user = await Admin.findById(userId);
+
+    if (!user) {
+      return res.status(404).send("Admin not found");
+    }
+    user.email = email || user.email;
+    user.name = name || user.name;
+    user.phoneNumber = phoneNumber || user.phoneNumber;
+    user.devicetoken = devicetoken || user.devicetoken;
+
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      user.password = hashedPassword;
+    }
+
+    await user.save();
+    res.status(200).send({ message: "Admin updated successfully", user });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error: " + error.message);
