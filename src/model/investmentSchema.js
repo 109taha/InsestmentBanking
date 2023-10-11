@@ -2,10 +2,6 @@ const mongoose = require("mongoose");
 
 const InvestmentSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
-      require: true,
-    },
     detail: {
       type: String,
       require: true,
@@ -16,6 +12,14 @@ const InvestmentSchema = new mongoose.Schema(
     price: {
       type: String,
       require: true,
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    contactUs: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ContactUs",
     },
   },
   { timestamps: true }
