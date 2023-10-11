@@ -7,7 +7,8 @@ const InvestmentSchema = new mongoose.Schema(
       require: true,
     },
     planDuration: {
-      time: String,
+      type: String,
+      require: true,
     },
     price: {
       type: String,
