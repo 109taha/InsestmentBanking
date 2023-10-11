@@ -1,29 +1,40 @@
-const router = require("express").Router();
-const JWT = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-const Admin = require("../model/adminSchema");
-const User = require("../model/userSchema");
-const cloudinary = require("../helper/cloudinary");
-const upload = require("../helper/multer");
 const fs = require("fs");
-const { AdminJoiSchema, UserJoiSchema } = require("../helper/joi/joiSchema");
+const bcrypt = require("bcrypt");
+const JWT = require("jsonwebtoken");
+const router = require("express").Router();
+const upload = require("../helper/multer");
+const User = require("../model/userSchema");
+const Admin = require("../model/adminSchema");
+const cloudinary = require("../helper/cloudinary");
 const sendResetEmail = require("../helper/nodemailer");
 const { verifyUser } = require("../helper/middleware/verify");
+const { AdminJoiSchema, UserJoiSchema } = require("../helper/joi/joiSchema");
+const JWT_SEC = "JoM2CF2k19Z0Jpwom6wkuFvKvNMQwuqiPHryaoJ";
+const JWT_SEC_ADMIN = "CsJ6R8Y6XIPG0ayeyjaHP2FdozBgVBE0813SgEtQC5";
 
 router.post("/registeradmin", AdminJoiSchema, async (req, res) => {
   try {
     const { email, name, password, phoneNumber, devicetoken } = req.body;
     console.log(req.body);
     if (!email || !name || !password || !phoneNumber) {
-      return res.status(400).send("you have to provide all of the felid");
+      return res.status(400).send({
+        success: false,
+        message: "you have to provide all of the felid",
+      });
     }
     const exisitUserAdmin = await Admin.findOne({ email });
     if (exisitUserAdmin) {
-      return res.status(400).send("Admin already register, goto login page");
+      return res.status(400).send({
+        success: false,
+        message: "Admin already register, goto login page",
+      });
     }
     const exisitUser = await User.findOne({ email });
     if (exisitUser) {
-      return res.status(400).send("User already register, goto login page");
+      return res.status(400).send({
+        success: false,
+        message: "User already register, goto login page",
+      });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -87,7 +98,9 @@ router.put(
 
       await user.save();
 
-      res.status(200).send("Profile pic added successfully ");
+      res
+        .status(200)
+        .send({ success: ture, message: "Profile pic added successfully " });
     } catch (error) {
       console.error(error);
       res.status(500).send("Internal Server Error: " + error.message);
@@ -101,7 +114,9 @@ router.post("/forgotadmin", async (req, res) => {
 
     const user = await Admin.findOne({ email });
     if (!user) {
-      return res.status(400).send("No Admin found on that email");
+      return res
+        .status(400)
+        .send({ success: true, message: "No Admin found on that email" });
     }
     const token = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
     console.log(token);
@@ -125,7 +140,9 @@ router.post("/forgot", async (req, res) => {
 
     const staff = await User.findOne({ email });
     if (!staff) {
-      return res.status(400).send("no User found on that email");
+      return res
+        .status(400)
+        .send({ success: true, message: "No User found on that email" });
     }
     const userId = staff._id;
     const token = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
@@ -150,16 +167,25 @@ router.post("/register", UserJoiSchema, async (req, res) => {
   try {
     const { email, name, password, phoneNumber, devicetoken } = req.body;
     if (!email || !name || !password || !phoneNumber) {
-      return res.status(400).send("you have to provide all of the field");
+      return res.status(400).send({
+        success: true,
+        message: "you have to provide all of the field",
+      });
     }
 
     const exisitUserAdmin = await Admin.findOne({ email });
     if (exisitUserAdmin) {
-      return res.status(400).send("Admin already register, goto login page");
+      return res.status(400).send({
+        success: false,
+        message: "Admin already register, goto login page",
+      });
     }
     const exisitUser = await User.findOne({ email });
     if (exisitUser) {
-      return res.status(400).send("User already register, goto login page");
+      return res.status(400).send({
+        success: false,
+        message: "User already register, goto login page",
+      });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -226,7 +252,9 @@ router.get("/alluser", async (req, res) => {
     const AllUser = await User.find().skip(skip).limit(limit).sort(sortBY);
 
     if (!AllUser.length > 0) {
-      return res.status(400).send("No user found!");
+      return res
+        .status(400)
+        .send({ success: false, message: "No user found!" });
     }
     const totalPages = Math.ceil(total / limit);
     res
@@ -243,9 +271,11 @@ router.get("/oneuser/:id", async (req, res) => {
     const userId = req.params.id;
     const user = await User.findOne({ _id: userId });
     if (!user) {
-      return res.status(400).send("No user found!");
+      return res
+        .status(400)
+        .send({ success: false, message: "No user found!" });
     }
-    res.status(200).send({ success: true, user });
+    res.status(200).send({ success: true, data: user });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error: " + error.message);
@@ -255,7 +285,6 @@ router.get("/oneuser/:id", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(req.body);
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -264,13 +293,14 @@ router.post("/login", async (req, res) => {
     }
 
     const admin = await Admin.findOne({ email });
-    console.log(admin);
     if (admin) {
       const validUserPassword = await bcrypt.compare(password, admin.password);
       if (validUserPassword == false) {
-        return res.status(400).send("Password is Incorrect");
+        return res
+          .status(400)
+          .send({ success: false, message: "Password is Incorrect" });
       }
-      const token = JWT.sign({ userId: admin._id }, process.env.JWT_SEC_ADMIN);
+      const token = JWT.sign({ userId: admin._id }, JWT_SEC_ADMIN);
 
       return res.status(200).json({
         success: true,
@@ -291,8 +321,7 @@ router.post("/login", async (req, res) => {
     if (validUserPassword == false) {
       return res.status(400).send("Password Is incorrect");
     }
-    console.log(process.env.JWT_SEC);
-    const token = JWT.sign({ userId: user._id }, process.env.JWT_SEC);
+    const token = JWT.sign({ userId: user._id }, JWT_SEC);
 
     return res.status(200).json({
       success: true,
@@ -311,7 +340,9 @@ router.delete("/delete/:id", async (req, res) => {
     const userId = req.params.id;
     const deleteUser = await User.findByIdAndDelete(userId);
     if (deleteUser === null) {
-      return res.status(400).send("no User found!");
+      return res
+        .status(400)
+        .send({ success: false, message: "no User found!" });
     }
     res
       .status(200)

@@ -1,19 +1,29 @@
+const cors = require("cors");
 const express = require("express");
-const app = express();
 require("dotenv").config();
-
-const dbConfig = require("./dbconfig/dbConfig");
-dbConfig();
-
+const app = express();
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-const PORT = process.env.PORT || "5000";
+//cors
+app.use(
+  cors({
+    origin: "*",
+  })
+);
+
+// connect mongodb
+const MongoDB = require("./dbconfig/dbConfig");
+MongoDB();
+
+// Port
+PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  try {
-    console.log(`Server is running on Port: ${PORT}`);
-  } catch (error) {
-    console.log("Server has some issue");
-  }
+  console.log(`server is running on port: ${PORT}`);
+});
+
+app.get("/", (req, res) => {
+  res.status(200).send({ success: ture, message: "News Server Is Running" });
 });
 
 const investment = require("./routers/investmentRouters");

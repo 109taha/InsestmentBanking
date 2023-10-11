@@ -1,5 +1,5 @@
-const Investment = require("../model/investmentSchema");
 const router = require("express").Router();
+const Investment = require("../model/investmentSchema");
 
 router.post("/create", async (req, res) => {
   try {
