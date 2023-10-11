@@ -27,6 +27,9 @@ const UserSchema = new mongoose.Schema(
     devicetoken: {
       type: String,
     },
+    profile_pic: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

@@ -264,7 +264,7 @@ router.post("/login", async (req, res) => {
     }
 
     const admin = await Admin.findOne({ email });
-
+    console.log(admin);
     if (admin) {
       const validUserPassword = await bcrypt.compare(password, admin.password);
       if (validUserPassword == false) {
@@ -279,6 +279,7 @@ router.post("/login", async (req, res) => {
         user: admin,
       });
     }
+
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -290,13 +291,14 @@ router.post("/login", async (req, res) => {
     if (validUserPassword == false) {
       return res.status(400).send("Password Is incorrect");
     }
+    console.log(process.env.JWT_SEC);
     const token = JWT.sign({ userId: user._id }, process.env.JWT_SEC);
 
     return res.status(200).json({
       success: true,
       message: "User login successful",
       token,
-      user,
+      user: user,
     });
   } catch (error) {
     console.error(error);
