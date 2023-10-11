@@ -18,7 +18,7 @@ router.post(
           const { path } = file;
           try {
             const uploader = await cloudinary.uploader.upload(path, {
-              folder: "blogging",
+              folder: "investment",
             });
             attachArtwork.push({ url: uploader.secure_url });
             fs.unlinkSync(path);
@@ -31,11 +31,11 @@ router.post(
           }
         }
       }
-
+      console.log(attachArtwork);
       const userId = req.user;
       const newAddPayment = new AddPayment({
         userId,
-        attachProved: attachArtwork,
+        attachProved: attachArtwork[0].url,
       });
       await newAddPayment.save();
       return res.status(200).send({ success: true, data: newAddPayment });

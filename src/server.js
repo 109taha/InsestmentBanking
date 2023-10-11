@@ -30,4 +30,4 @@ const user = require("./routers/userRouters");
 const payments = require("./routers/addpayment");
 app.use("/investment", investment);
 app.use("/", user);
-// app.use("/payment", payments);
+app.use("/payment", payments);
