@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const ContactUsSchema = new mongoose.Schema(
   {
     phoneNumber: {
-      type: String,
+      type: Number,
       require: true,
     },
     email: {

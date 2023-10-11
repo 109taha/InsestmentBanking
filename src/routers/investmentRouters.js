@@ -105,6 +105,13 @@ router.post("/contact", verifyAdmin, async (req, res) => {
         .status(400)
         .send({ success: false, message: "You have to provide number atlest" });
     }
+    const existingContact = await ContactUs.findOne({ phoneNumber });
+    if (existingContact) {
+      return res.status(400).send({
+        success: false,
+        message: "This number has been already in used",
+      });
+    }
     const newContact = new ContactUs({
       phoneNumber,
       email,
@@ -115,6 +122,71 @@ router.post("/contact", verifyAdmin, async (req, res) => {
     console.error(error);
     re.status(500).send("Internal server error");
     throw error;
+  }
+});
+
+router.put("/contact/update/:Id", verifyAdmin, async (req, res) => {
+  try {
+    const conId = req.params.Id;
+    const { phoneNumber, email } = req.body;
+    const con = await ContactUs.findById(conId);
+    if (!con) {
+      return res
+        .status(400)
+        .send({ success: false, message: "No ConID found on that number" });
+    }
+    con.phoneNumber = phoneNumber || con.phoneNumber;
+    con.email = email || con.email;
+    await con.save();
+
+    res.status(200).send({ success: true, data: con });
+  } catch (error) {
+    console.error(error);
+    re.status(500).send("Internal server error");
+    throw error;
+  }
+});
+
+router.get("/get/contact", async (req, res) => {
+  try {
+    const all = await ContactUs.find();
+    if (all.lenght <= 0) {
+      return res
+        .status(400)
+        .send({ success: false, message: "No Contact Number Found" });
+    }
+    res.status(200).send({ success: true, data: all });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Internal server error");
+  }
+});
+
+router.get("/get/contact/:Id", async (req, res) => {
+  try {
+    const con = req.params.Id;
+    const all = await ContactUs.findById(con);
+    if (!all) {
+      return res
+        .status(400)
+        .send({ success: false, message: "No Contact Number Found" });
+    }
+    res.status(200).send({ success: true, data: all });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Internal server error");
+  }
+});
+router.delete("/get/contact/:Id", async (req, res) => {
+  try {
+    const con = req.params.Id;
+    const all = await ContactUs.findById(con);
+    res
+      .status(200)
+      .send({ success: true, message: "Contact Number deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Internal server error");
   }
 });
 
