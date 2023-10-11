@@ -30,6 +30,17 @@ const UserSchema = new mongoose.Schema(
     profile_pic: {
       type: String,
     },
+    amount: {
+      type: Number,
+      default: 0,
+    },
+    investmentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Investment",
+    },
+    userBank: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
