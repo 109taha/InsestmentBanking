@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const Investment = require("../model/investmentSchema");
 const { verifyAdmin, verifyUser } = require("../helper/middleware/verify");
+const ContactUs = require("../model/ContactUs");
 
 router.post("/create", verifyAdmin, async (req, res) => {
   try {
@@ -92,6 +93,27 @@ router.delete("/one/:Id", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal server error");
+    throw error;
+  }
+});
+
+router.post("/contact", verifyAdmin, async (req, res) => {
+  try {
+    const { phoneNumber, email } = req.body;
+    if (!phoneNumber) {
+      return res
+        .status(400)
+        .send({ success: false, message: "You have to provide number atlest" });
+    }
+    const newContact = new ContactUs({
+      phoneNumber,
+      email,
+    });
+    await newContact.save();
+    res.status(200).send({ success: true, data: newContact });
+  } catch (error) {
+    console.error(error);
+    re.status(500).send("Internal server error");
     throw error;
   }
 });
