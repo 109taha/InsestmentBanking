@@ -86,7 +86,6 @@ router.put(
           }
         }
       }
-      console.log(attachArtwork);
       const users = req.user;
 
       const user = await User.findById(users);

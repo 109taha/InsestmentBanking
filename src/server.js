@@ -25,8 +25,9 @@ app.listen(PORT, () => {
 app.get("/", (req, res) => {
   res.status(200).send({ success: ture, message: "News Server Is Running" });
 });
-
 const investment = require("./routers/investmentRouters");
 const user = require("./routers/userRouters");
+const payments = require("./routers/addpayment");
 app.use("/investment", investment);
 app.use("/", user);
+// app.use("/payment", payments);
