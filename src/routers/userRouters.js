@@ -212,7 +212,15 @@ router.post("/register", UserJoiSchema, async (req, res) => {
 router.put("/update/:id", async (req, res) => {
   try {
     const userId = req.params.id;
-    const { email, name, password, phoneNumber, devicetoken } = req.body;
+    const {
+      email,
+      name,
+      password,
+      phoneNumber,
+      devicetoken,
+      amount,
+      userBank,
+    } = req.body;
 
     const user = await User.findById(userId);
 
@@ -223,6 +231,8 @@ router.put("/update/:id", async (req, res) => {
     user.name = name || user.name;
     user.phoneNumber = phoneNumber || user.phoneNumber;
     user.devicetoken = devicetoken || user.devicetoken;
+    user.amount = amount || user.amount;
+    user.userBank = userBank || user.userBank;
 
     if (password) {
       const salt = await bcrypt.genSalt(10);

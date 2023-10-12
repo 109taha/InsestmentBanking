@@ -11,6 +11,12 @@ const AddPaymentSchema = new mongoose.Schema(
       ref: "User",
       require: true,
     },
+    status: {
+      type: String,
+      require: true,
+      enum: ["Pending", "Seen"],
+      default: "Pending",
+    },
   },
   { timestamps: true }
 );

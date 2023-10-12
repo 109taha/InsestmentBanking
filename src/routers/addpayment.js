@@ -1,8 +1,9 @@
 const router = require("express").Router();
 const AddPayment = require("../model/addPayment");
-const { verifyUser } = require("../helper/middleware/verify");
+const { verifyUser, verifyAdmin } = require("../helper/middleware/verify");
 const upload = require("../helper/multer");
 const cloudinary = require("../helper/cloudinary");
+const fs = require("fs");
 
 router.post(
   "/addpayment",
@@ -31,7 +32,6 @@ router.post(
           }
         }
       }
-      console.log(attachArtwork);
       const userId = req.user;
       const newAddPayment = new AddPayment({
         userId,
@@ -45,5 +45,21 @@ router.post(
     }
   }
 );
+
+router.get("/all", verifyAdmin, async (req, res) => {
+  try {
+    const all = await AddPayment.find();
+    if (all.length <= 0) {
+      return res.status(400).send({
+        success: false,
+        message: "no payment verification is found",
+      });
+    }
+    res.status(200).send({ success: true, data: all });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Internal Server Error: " + error.message);
+  }
+});
 
 module.exports = router;
