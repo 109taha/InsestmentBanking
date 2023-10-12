@@ -61,5 +61,21 @@ router.get("/all", verifyAdmin, async (req, res) => {
     return res.status(500).send("Internal Server Error: " + error.message);
   }
 });
+router.get("/one/:Id", verifyAdmin, async (req, res) => {
+  try {
+    const allId = req.params.Id;
+    const all = await AddPayment.findById(allId);
+    if (!all) {
+      return res.status(400).send({
+        success: false,
+        message: "no payment verification is found",
+      });
+    }
+    res.status(200).send({ success: true, data: all });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Internal Server Error: " + error.message);
+  }
+});
 
 module.exports = router;
