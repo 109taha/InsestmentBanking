@@ -79,7 +79,7 @@ router.get("/one/:Id", async (req, res) => {
   }
 });
 
-router.delete("/one/:Id", async (req, res) => {
+router.delete("/one/:Id", verifyAdmin, async (req, res) => {
   try {
     const invId = req.params.Id;
     const allInv = await Investment.findByIdAndDelete(invId);

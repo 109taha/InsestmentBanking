@@ -61,6 +61,7 @@ router.get("/all", verifyAdmin, async (req, res) => {
     return res.status(500).send("Internal Server Error: " + error.message);
   }
 });
+
 router.get("/one/:Id", verifyAdmin, async (req, res) => {
   try {
     const allId = req.params.Id;

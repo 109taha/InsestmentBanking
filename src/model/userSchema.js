@@ -30,9 +30,9 @@ const UserSchema = new mongoose.Schema(
     profile_pic: {
       type: String,
     },
-    amount: {
-      type: Number,
-      default: 0,
+    wallet: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Wallet",
     },
     investmentId: {
       type: mongoose.Schema.Types.ObjectId,
