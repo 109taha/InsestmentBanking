@@ -28,6 +28,8 @@ app.get("/", (req, res) => {
 const investment = require("./routers/investmentRouters");
 const user = require("./routers/userRouters");
 const payments = require("./routers/addpayment");
+const addAcc = require("./routers/addAccount");
 app.use("/investment", investment);
 app.use("/", user);
 app.use("/payment", payments);
+app.use("/", addAcc);

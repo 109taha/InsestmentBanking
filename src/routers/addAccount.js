@@ -20,7 +20,7 @@ router.post("/create/account", verifyAdmin, async (req, res) => {
     res.status(200).send({ success: true, data: createAcc });
   } catch (error) {
     console.error(error);
-    return res.status(500).send("Internal server error");
+    res.status(500).send("Internal server error");
     throw error;
   }
 });
@@ -44,7 +44,7 @@ router.post("/update/account/:AccId", verifyAdmin, async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).send("Internal server error");
+    res.status(500).send("Internal server error");
     throw error;
   }
 });
@@ -60,7 +60,24 @@ router.get("/acc", verifyAdmin, async (req, res) => {
     res.status(200).send({ success: true, data: allAcc });
   } catch (error) {
     console.error(error);
-    return res.status(500).send("Internal server error !");
+    res.status(500).send("Internal server error !");
+    throw error;
+  }
+});
+
+router.get("/acc/:accId", async (req, res) => {
+  try {
+    const accId = req.params.accId;
+    const allAcc = await AdminAcc.findById(accId);
+    if (!allAcc) {
+      return res
+        .status(500)
+        .send({ success: false, message: "No bank account fouund!" });
+    }
+    res.status(200).send({ success: true, data: allAcc });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal server error !");
     throw error;
   }
 });
