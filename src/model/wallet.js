@@ -5,6 +5,10 @@ const WalletSchema = await mongoose.Schema({
     type: Number,
     default: 0,
   },
+  pendingAmount: {
+    type: Number,
+    default: 0,
+  },
   userId: {
     type: String,
     ref: "User",

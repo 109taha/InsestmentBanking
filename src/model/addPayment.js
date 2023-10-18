@@ -14,7 +14,7 @@ const AddPaymentSchema = new mongoose.Schema(
     status: {
       type: String,
       require: true,
-      enum: ["Pending", "Seen"],
+      enum: ["Pending", "Seen", "Verifyed"],
       default: "Pending",
     },
   },

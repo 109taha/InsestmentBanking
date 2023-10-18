@@ -14,9 +14,17 @@ const InvestmentSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    dailyWithrow: {
+      type: Number,
+      require: true,
+    },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+    },
+    adminAcc: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "AdminAcc",
     },
     contactUs: {
       type: mongoose.Schema.Types.ObjectId,
