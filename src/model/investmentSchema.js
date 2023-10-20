@@ -25,6 +25,7 @@ const InvestmentSchema = new mongoose.Schema(
     adminAcc: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "AdminAcc",
+      require: true,
     },
     contactUs: {
       type: mongoose.Schema.Types.ObjectId,

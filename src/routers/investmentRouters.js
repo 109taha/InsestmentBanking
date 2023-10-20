@@ -5,8 +5,8 @@ const ContactUs = require("../model/ContactUs");
 
 router.post("/create", verifyAdmin, async (req, res) => {
   try {
-    const { detail, planDuration, price, contactUs } = req.body;
-    if ((!detail, !price, !planDuration)) {
+    const { detail, planDuration, price, contactUs, adminAcc } = req.body;
+    if ((!detail, !price, !planDuration, contactUs, !adminAcc)) {
       return res
         .status(400)
         .send({ success: false, message: "You have to provide all the feild" });
@@ -16,6 +16,7 @@ router.post("/create", verifyAdmin, async (req, res) => {
       planDuration,
       price,
       contactUs,
+      adminAcc,
     });
     await newInvestment.save();
     res.status(200).send({ success: true, data: newInvestment });
@@ -29,12 +30,14 @@ router.post("/create", verifyAdmin, async (req, res) => {
 router.put("/update/:Id", verifyAdmin, async (req, res) => {
   try {
     const invId = req.params.Id;
-    const { detail, planDuration, price } = req.body;
+    const { detail, planDuration, price, contactUs, adminAcc } = req.body;
     const inv = await Investment.findById(invId);
 
     inv.detail = detail || inv.detail;
     inv.planDuration = planDuration || inv.planDuration;
     inv.price = price || inv.price;
+    inv.adminAcc = adminAcc || inv.adminAcc;
+    inv.contactUs = contactUs || inv.contactUs;
 
     await inv.save();
 
@@ -49,7 +52,7 @@ router.put("/update/:Id", verifyAdmin, async (req, res) => {
 router.get("/all", async (req, res) => {
   try {
     const allInv = await Investment.find();
-    if (allInv.lenght <= 0) {
+    if (!allInv.length > 0) {
       return res
         .status(400)
         .send({ success: false, message: "No Investment Found " });
@@ -65,7 +68,9 @@ router.get("/all", async (req, res) => {
 router.get("/one/:Id", async (req, res) => {
   try {
     const invId = req.params.Id;
-    const allInv = await Investment.findById(invId).populate("contactUs");
+    const allInv = await Investment.findById(invId)
+      .populate("contactUs")
+      .populate("adminAcc");
     if (allInv.lenght <= 0) {
       return res
         .status(400)

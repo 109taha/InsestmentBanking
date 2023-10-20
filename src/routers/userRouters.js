@@ -15,7 +15,6 @@ const { AdminJoiSchema, UserJoiSchema } = require("../helper/joi/joiSchema");
 router.post("/registeradmin", AdminJoiSchema, async (req, res) => {
   try {
     const { email, name, password, phoneNumber, devicetoken } = req.body;
-    console.log(req.body);
     if (!email || !name || !password || !phoneNumber) {
       return res.status(400).send({
         success: false,
@@ -39,7 +38,6 @@ router.post("/registeradmin", AdminJoiSchema, async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    console.log(hashedPassword);
 
     const newAdmin = new Admin({
       email,
@@ -48,7 +46,6 @@ router.post("/registeradmin", AdminJoiSchema, async (req, res) => {
       phoneNumber,
       devicetoken,
     });
-    console.log(newAdmin);
     await newAdmin.save();
     res
       .status(200)
@@ -69,7 +66,6 @@ router.put(
 
     try {
       if (files && files.length > 0) {
-        console.log(files);
         for (const file of files) {
           const { path } = file;
           try {
@@ -77,7 +73,6 @@ router.put(
               folder: "investment",
             });
             attachArtwork.push({ url: uploader.secure_url });
-            console.log(attachArtwork);
             fs.unlinkSync(path);
           } catch (err) {
             if (attachArtwork.length > 0) {
@@ -120,7 +115,6 @@ router.post("/forgotadmin", async (req, res) => {
         .send({ success: true, message: "No Admin found on that email" });
     }
     const token = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
-    console.log(token);
     sendResetEmail(email, token);
     res.json({
       success: true,
