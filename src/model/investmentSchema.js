@@ -18,10 +18,12 @@ const InvestmentSchema = new mongoose.Schema(
       type: Number,
       require: true,
     },
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
+    userId: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     adminAcc: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "AdminAcc",

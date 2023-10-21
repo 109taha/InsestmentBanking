@@ -1,16 +1,16 @@
 const mongoose = require("mongoose");
 
-const WalletSchema = await mongoose.Schema({
+const WalletSchema = new mongoose.Schema({
   amount: {
     type: Number,
     default: 0,
   },
-  pendingAmount: {
+  profit: {
     type: Number,
     default: 0,
   },
   userId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     require: true,
   },

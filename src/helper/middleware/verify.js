@@ -4,7 +4,7 @@ const verifyAdmin = async (req, res, next) => {
   try {
     const token = req.headers.authorization.split(" ")[1];
     const decryptedToken = JWT.verify(token, process.env.JWT_SEC_ADMIN);
-    req.body.userId = decryptedToken.userId;
+    req.user = decryptedToken.userId;
     next();
   } catch (error) {
     res.status(401).json({

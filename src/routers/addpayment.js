@@ -1,5 +1,7 @@
 const router = require("express").Router();
 const AddPayment = require("../model/addPayment");
+const Wallet = require("../model/wallet");
+const User = require("../model/userSchema");
 const { verifyUser, verifyAdmin } = require("../helper/middleware/verify");
 const upload = require("../helper/multer");
 const cloudinary = require("../helper/cloudinary");
@@ -76,6 +78,73 @@ router.get("/one/:Id", verifyAdmin, async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).send("Internal Server Error: " + error.message);
+  }
+});
+
+router.post("/createWallet", verifyAdmin, async (req, res) => {
+  try {
+    const { amount, userId } = req.body;
+    const user = await User.findById(userId);
+    const existingWallet = user.wallet;
+    if (existingWallet != null) {
+      const walletId = user.wallet.toString();
+      const wallet = await Wallet.findById(walletId);
+      wallet.amount += amount;
+      await wallet.save();
+      return res.status(200).send({ success: true, data: wallet });
+    }
+    const newWallet = new Wallet({
+      amount,
+      userId,
+    });
+    await newWallet.save();
+    user.wallet = newWallet._id;
+    await user.save();
+    res.status(200).send({ success: true, data: newWallet });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal server error!");
+  }
+});
+
+router.get("/allWallet", verifyAdmin, async (req, res) => {
+  try {
+    const all = await Wallet.find();
+    if (all.length <= 0) {
+      return res.status(400).send({
+        success: false,
+        message: "No wallet found",
+      });
+    }
+    res.status(200).send({ success: true, data: all });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Internal Server Error: " + error.message);
+  }
+});
+
+router.post("/removeAmount/:walletId", verifyAdmin, async (req, res) => {
+  try {
+    const walletId = req.params.walletId;
+    const amount = req.body.amount;
+    const wallet = await Wallet.findById(walletId);
+    if (!wallet) {
+      return res
+        .status(400)
+        .send({ success: false, message: "No wallet found!" });
+    }
+    if (wallet.amount < amount) {
+      return res.status(400).send({
+        success: false,
+        message: "User didn't have that blance in his wallet",
+      });
+    }
+    wallet.amount -= amount;
+    await wallet.save();
+    res.status(200).send({ success: true, data: wallet });
+  } catch (error) {
+    console.error(error);
+    req.status(500).send("Internal server error!");
   }
 });
 
