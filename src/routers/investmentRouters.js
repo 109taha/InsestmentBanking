@@ -2,6 +2,8 @@ const router = require("express").Router();
 const Investment = require("../model/investmentSchema");
 const { verifyAdmin, verifyUser } = require("../helper/middleware/verify");
 const ContactUs = require("../model/ContactUs");
+const User = require("../model/userSchema");
+const Wallet = require("../model/wallet");
 
 router.post("/create", verifyAdmin, async (req, res) => {
   try {
@@ -46,6 +48,39 @@ router.put("/update/:Id", verifyAdmin, async (req, res) => {
     console.error(error);
     res.status(500).send("Internal server error");
     throw error;
+  }
+});
+
+router.post("/buyInvestment/:invetId", verifyUser, async (req, res) => {
+  try {
+    const userId = req.user;
+    const invetId = req.params.invetId;
+    const investment = await Investment.findById(invetId);
+    if (!investment) {
+      return res
+        .status(400)
+        .send({ success: false, message: "No investment is " });
+    }
+
+    const user = await User.findById(userId);
+    const wallet = await Wallet.findById(user.wallet.toString());
+    if (investment.price > wallet.amount) {
+      return res.status(400).send({
+        success: false,
+        message: "You don't have enough balance to buy that investment plan",
+      });
+    }
+    wallet.amount -= investment.price;
+    await wallet.save();
+
+    investment.userId.push(userId);
+    await investment.save();
+    res
+      .status(200)
+      .send({ success: true, message: "You successFully get the investment" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Internal server error");
   }
 });
 
